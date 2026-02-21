@@ -87,7 +87,7 @@ func dispatch(ctx context.Context, id int, jobs <-chan string, results chan<- Re
 
 				if isRetryable(status, err) {
 					dur := backoff(i)
-					fmt.Printf("Attempt %d for url (%s) running in %v\n", i+2, url, dur)
+					fmt.Printf("Retry %d for url (%s) running in %v\n", i+2, url, dur)
 
 					select {
 					case <-ctx.Done():
