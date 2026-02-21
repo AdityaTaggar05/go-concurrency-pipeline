@@ -35,7 +35,7 @@ func main() {
 	go GenerateWorkers(ctx, jobs, results)
 
 	// Initialize Stats
-	stats := Stats{}
+	stats := NewStats()
 
 	for res := range results {
 		stats.Update(res)
@@ -47,5 +47,6 @@ func main() {
 		}
 	}
 
-	fmt.Printf("\n-----------------------------------------------------\nTotal Time Elapsed: %s\nStats: %v\n", time.Since(start), stats)
+	fmt.Printf("\n-----------------------------------------------------\nTotal Time Elapsed: %s\n\n", time.Since(start))
+	fmt.Println(stats)
 }
