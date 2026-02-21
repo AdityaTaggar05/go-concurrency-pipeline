@@ -34,9 +34,12 @@ func main() {
 	}()
 	go GenerateWorkers(ctx, jobs, results)
 
-	count := 0
+	// Initialize Stats
+	stats := Stats{}
+
 	for res := range results {
-		count++
+		stats.Update(res)
+
 		if res.Error != nil {
 			fmt.Printf("❌ %s: %v (%s)\n", res.URL, res.Error, res.Latency)
 		} else {
@@ -44,5 +47,5 @@ func main() {
 		}
 	}
 
-	fmt.Printf("\n-----------------------------------------------------\nMade %d requests in a total time of %s\n", count, time.Since(start))
+	fmt.Printf("\n-----------------------------------------------------\nTotal Time Elapsed: %s\nStats: %v\n", time.Since(start), stats)
 }
