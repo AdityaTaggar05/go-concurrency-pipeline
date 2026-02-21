@@ -66,31 +66,24 @@ func dispatch(ctx context.Context, id int, jobs <-chan string, results chan<- Re
 				return
 			}
 
-			for i := range maxRetries {
+			start := time.Now()
+
+			res := Response{
+				URL: url,
+				NumTries: 1,
+			}
+
+			for ; res.NumTries <= maxRetries+1; res.NumTries++ {
 				if ctx.Err() != nil {
 					fmt.Printf("Stopping Worker %d...\n", id)
 					return
 				}
 
-				start := time.Now()
 				status, err := sendRequest(client, url)
 
-				res := Response{
-					URL:     url,
-					Latency: time.Since(start),
-				}
-
-				if err != nil {
-					res.Error = err
-				} else {
-					res.Status = status
-				}
-
-				results <- res
-
-				if isRetryable(status, err) {
-					dur := backoff(i)
-					fmt.Printf("Retry %d for url (%s) running in %v\n", i+2, url, dur)
+				if isRetryable(status, err) && res.NumTries != maxRetries + 1 {
+					dur := backoff(res.NumTries)
+					fmt.Printf("Retry %d for url (%s) running in %v\n", res.NumTries, url, dur)
 
 					select {
 					case <-ctx.Done():
@@ -99,6 +92,14 @@ func dispatch(ctx context.Context, id int, jobs <-chan string, results chan<- Re
 					case <-time.After(dur):
 					}
 				} else {
+					res.Latency = time.Since(start)
+					if err != nil {
+						res.Error = err
+					} else {
+						res.Status = status
+					}
+
+					results <- res
 					break
 				}
 			}
@@ -129,6 +130,7 @@ func isRetryable(status int, err error) bool {
 }
 
 func backoff(attempt int) time.Duration {
+	attempt--
 	d := min(baseBackoff*(1<<attempt), maxBackoff)
 	jitter := time.Duration(rand.Int63n(int64(d / 3)))
 

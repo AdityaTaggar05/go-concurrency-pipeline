@@ -19,7 +19,7 @@ func NewStats() *Stats {
 }
 
 func (s *Stats) Update(res Response) {
-	s.Count++
+	s.Count += res.NumTries
 
 	if res.Latency > s.MaxTime {
 		s.MaxTime = res.Latency

@@ -41,9 +41,9 @@ func main() {
 		stats.Update(res)
 
 		if res.Error != nil {
-			fmt.Printf("❌ %s: %v (%s)\n", res.URL, res.Error, res.Latency)
+			fmt.Printf("❌ [%d] %s: %v (%s)\n", res.NumTries, res.URL, res.Error, res.Latency)
 		} else {
-			fmt.Printf("✅ %s: %d (%s)\n", res.URL, res.Status, res.Latency)
+			fmt.Printf("✅ [%d] %s: %d (%s)\n", res.NumTries, res.URL, res.Status, res.Latency)
 		}
 	}
 

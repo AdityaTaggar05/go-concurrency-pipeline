@@ -7,4 +7,5 @@ type Response struct {
 	Status  int
 	Latency time.Duration
 	Error error
+	NumTries int
 }
