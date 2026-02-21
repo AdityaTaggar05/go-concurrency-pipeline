@@ -10,12 +10,14 @@ import (
 )
 
 func main() {
-	path := flag.String("file", "urls.txt", "The file containing urls")
+	// Initialize CMD Argument
+	path := *flag.String("file", "urls.txt", "The file containing urls")
 	flag.String("o", "results.txt", "The file containing the results")
-	flag.Int("retries", 3, "Number of retries per request")
-	flag.Parse()
 
-	numJobs := 10
+	flag.Int("retries", 3, "Number of retries per request")
+	flag.Int("workers", 8, "Numer of workers to run concurrently")
+	numJobs := *flag.Int("jobs", 10, "Number of jobs to handle concurrently")
+	flag.Parse()
 
 	jobs := make(chan string, numJobs)
 	results := make(chan Response, numJobs)
@@ -26,7 +28,7 @@ func main() {
 	start := time.Now()
 
 	go func() {
-		if err := GenerateJobs(ctx, jobs, *path); err != nil {
+		if err := GenerateJobs(ctx, jobs, path); err != nil {
 			fmt.Println("Stopping job generation...")
 		}
 	}()

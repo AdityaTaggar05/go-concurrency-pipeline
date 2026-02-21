@@ -19,7 +19,7 @@ const (
 )
 
 func GenerateWorkers(ctx context.Context, jobs <-chan string, results chan<- Response) {
-	numWorkers := 8
+	numWorkers, _ := strconv.Atoi(flag.Lookup("workers").Value.String())
 
 	var wg sync.WaitGroup
 
