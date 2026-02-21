@@ -11,6 +11,8 @@ import (
 
 func main() {
 	path := flag.String("file", "urls.txt", "The file containing urls")
+	flag.String("o", "results.txt", "The file containing the results")
+	flag.Int("retries", 3, "Number of retries per request")
 	flag.Parse()
 
 	numJobs := 10

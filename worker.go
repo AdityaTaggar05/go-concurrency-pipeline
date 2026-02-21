@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,7 +14,6 @@ import (
 )
 
 const (
-	maxRetries  = 3
 	baseBackoff = 200 * time.Millisecond
 	maxBackoff  = 5 * time.Second
 )
@@ -39,6 +40,8 @@ func GenerateWorkers(ctx context.Context, jobs <-chan string, results chan<- Res
 }
 
 func dispatch(ctx context.Context, id int, jobs <-chan string, results chan<- Response) {
+	maxRetries, _ := strconv.Atoi(flag.Lookup("retries").Value.String())
+
 	fmt.Println("Worker", id, "is up and running! Starting in 2 seconds...")
 	time.Sleep(time.Second * 2)
 
